@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Uploaded files
+public/uploads/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo 

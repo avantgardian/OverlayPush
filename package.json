@@ -1,0 +1,13 @@
+{
+  "name": "overlay-push",
+  "version": "1.0.0",
+  "description": "A web application for triggering media events on a blank page for OBS capture",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "uuid": "^9.0.1"
+  }
+} 
