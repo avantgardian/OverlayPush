@@ -97,16 +97,27 @@ wss.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.on('message', (message) => {
-        // Broadcast the message to all connected clients
-        wss.clients.forEach((client) => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(message);
-            }
-        });
+        try {
+            // Parse the incoming message to ensure it's valid JSON
+            const parsedMessage = JSON.parse(message.toString());
+            
+            // Broadcast the message to all connected clients
+            wss.clients.forEach((client) => {
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(parsedMessage));
+                }
+            });
+        } catch (error) {
+            console.error('Error processing WebSocket message:', error);
+        }
     });
 
     ws.on('close', () => {
         console.log('Client disconnected');
+    });
+
+    ws.on('error', (error) => {
+        console.error('WebSocket error:', error);
     });
 });
 

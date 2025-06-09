@@ -14,11 +14,23 @@ function connectWebSocket() {
         statusElement.className = 'status disconnected';
         setTimeout(connectWebSocket, 1000); // Reconnect after 1 second
     };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        statusElement.textContent = 'Connection Error';
+        statusElement.className = 'status disconnected';
+    };
 }
 
 function sendMessage(type, url) {
     if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type, url }));
+        try {
+            const message = { type, url };
+            ws.send(JSON.stringify(message));
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('Error sending message to server');
+        }
     } else {
         alert('Not connected to server. Please wait for connection.');
     }

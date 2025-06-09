@@ -10,13 +10,21 @@ function connectWebSocket() {
     };
 
     ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        handleMediaEvent(data);
+        try {
+            const data = JSON.parse(event.data);
+            handleMediaEvent(data);
+        } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+        }
     };
 
     ws.onclose = () => {
         console.log('Disconnected from WebSocket server');
         setTimeout(connectWebSocket, 1000); // Reconnect after 1 second
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
     };
 }
 
