@@ -25,6 +25,14 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #media-container img.fade-in, #media-container video.fade-in {
+            opacity: 1;
+        }
+        #media-container img.fade-out, #media-container video.fade-out {
+            opacity: 0;
         }
     </style>
 </head>

@@ -26,12 +26,20 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="file"] {
+        input[type="text"], input[type="file"], input[type="number"] {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+        }
+        .duration-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .duration-input input[type="number"] {
+            width: 100px;
         }
         button {
             background-color: #4CAF50;
@@ -66,16 +74,31 @@
         <div class="media-input">
             <label for="mediaUrl">Media URL (GIF/Video):</label>
             <input type="text" id="mediaUrl" placeholder="Enter URL for GIF or video">
+            <div class="duration-input">
+                <label for="mediaDuration">Duration (seconds):</label>
+                <input type="number" id="mediaDuration" min="1" value="10" step="1">
+                <span>seconds (0 for media length)</span>
+            </div>
             <button onclick="triggerMedia()">Show Media</button>
         </div>
         <div class="media-input">
             <label for="audioUrl">Audio URL:</label>
             <input type="text" id="audioUrl" placeholder="Enter URL for audio">
+            <div class="duration-input">
+                <label for="audioDuration">Duration (seconds):</label>
+                <input type="number" id="audioDuration" min="1" value="0" step="1">
+                <span>seconds (0 for audio length)</span>
+            </div>
             <button onclick="triggerAudio()">Play Audio</button>
         </div>
         <div class="media-input">
             <label for="mediaFile">Upload Media File:</label>
             <input type="file" id="mediaFile" accept="image/*,video/*,audio/*">
+            <div class="duration-input">
+                <label for="fileDuration">Duration (seconds):</label>
+                <input type="number" id="fileDuration" min="1" value="10" step="1">
+                <span>seconds (0 for media length)</span>
+            </div>
             <button onclick="uploadAndTrigger()">Upload & Show</button>
         </div>
         <button onclick="clearMedia()">Clear All</button>

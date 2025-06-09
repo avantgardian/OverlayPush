@@ -22,10 +22,10 @@ function connectWebSocket() {
     };
 }
 
-function sendMessage(type, url) {
+function sendMessage(type, url, duration = 0) {
     if (ws && ws.readyState === WebSocket.OPEN) {
         try {
-            const message = { type, url };
+            const message = { type, url, duration };
             ws.send(JSON.stringify(message));
         } catch (error) {
             console.error('Error sending message:', error);
@@ -38,8 +38,9 @@ function sendMessage(type, url) {
 
 function triggerMedia() {
     const url = document.getElementById('mediaUrl').value.trim();
+    const duration = parseInt(document.getElementById('mediaDuration').value) || 0;
     if (url) {
-        sendMessage('media', url);
+        sendMessage('media', url, duration);
     } else {
         alert('Please enter a media URL');
     }
@@ -47,8 +48,9 @@ function triggerMedia() {
 
 function triggerAudio() {
     const url = document.getElementById('audioUrl').value.trim();
+    const duration = parseInt(document.getElementById('audioDuration').value) || 0;
     if (url) {
-        sendMessage('audio', url);
+        sendMessage('audio', url, duration);
     } else {
         alert('Please enter an audio URL');
     }
@@ -57,6 +59,7 @@ function triggerAudio() {
 async function uploadAndTrigger() {
     const fileInput = document.getElementById('mediaFile');
     const file = fileInput.files[0];
+    const duration = parseInt(document.getElementById('fileDuration').value) || 0;
     
     if (!file) {
         alert('Please select a file to upload');
@@ -86,7 +89,7 @@ async function uploadAndTrigger() {
 
             const data = await response.json();
             const type = file.type.startsWith('audio/') ? 'audio' : 'media';
-            sendMessage(type, data.url);
+            sendMessage(type, data.url, duration);
         };
         reader.readAsDataURL(file);
     } catch (error) {
