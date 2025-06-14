@@ -1,59 +1,89 @@
-# Overlay Push
+# OverlayPush
 
-A web application that allows you to trigger media events (GIFs, videos, sounds) on a blank page that can be captured in OBS.
-
-## Project Structure
-
-```
-overlay-push/
-├── public/           # Client-side files
-│   ├── js/          # JavaScript files
-│   │   ├── capture.js
-│   │   └── control.js
-│   ├── index.html   # Blank page for OBS capture
-│   └── control.html # Control panel
-├── src/             # Server-side code
-│   └── server.js    # WebSocket server
-├── package.json
-└── README.md
-```
-
-## Setup
-
-1. Install Node.js if you haven't already (https://nodejs.org/)
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the server:
-   ```bash
-   npm start
-   ```
-
-## Usage
-
-1. Open `http://localhost:3000` in your browser - this is the blank page you'll capture in OBS
-2. Open `http://localhost:3000/control.html` in another browser window - this is your control panel
-3. In OBS, add a new Browser Source and set the URL to `http://localhost:3000`
-4. Use the control panel to:
-   - Enter URLs for GIFs or videos to display
-   - Enter URLs for audio to play
-   - Upload local media files
-   - Clear all media from the display
+A web application for capturing and displaying media through OBS, supporting images, GIFs, videos, audio, and YouTube videos.
 
 ## Features
 
-- Real-time media triggering
-- Support for GIFs, videos, and audio
-- Local file upload support
-- Automatic reconnection if connection is lost
-- Clean, modern interface
-- Transparent background for OBS capture
+- Real-time media display through WebSocket communication
+- Support for multiple media types:
+  - Images (JPG, PNG)
+  - GIFs
+  - Videos (MP4, WebM)
+  - Audio (MP3, WAV)
+  - YouTube videos (regular and shorts)
+- Customizable display duration for each media type
+- Smooth fade in/out transitions
+- Automatic aspect ratio handling:
+  - YouTube shorts display in 9:16 vertical format
+  - Regular YouTube videos display in 16:9 horizontal format
+  - Other media maintains original aspect ratio
+- File upload support with automatic cleanup
+- Modern, responsive design
 
-## Notes
+## Setup
 
-- The blank page has a transparent background, making it perfect for OBS capture
-- Videos are automatically muted and set to loop
-- Audio can be played independently of visual media
-- The control panel shows connection status
-- All media is centered and scaled appropriately on the display page 
+1. Clone the repository:
+```bash
+git clone https://github.com/avantgardian/OverlayPush.git
+cd OverlayPush
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the server:
+```bash
+npm start
+```
+
+4. Open the following URLs in your browser:
+   - Control Panel: `http://localhost:3000/control.html`
+   - Capture Page: `http://localhost:3000/`
+
+5. In OBS:
+   - Add a new Browser Source
+   - Set the URL to `http://localhost:3000/`
+   - Set the width and height to match your desired display size
+   - Enable "Control audio via OBS" if you want to control audio through OBS
+
+## Usage
+
+### Control Panel
+- Use the file input to select media files
+- Enter a custom duration (in seconds) for the media display
+- Click "Show Media" to display the selected media
+- Click "Clear" to remove the current media
+
+### Supported Media Types
+- Images: JPG, PNG
+- GIFs: Animated GIFs with customizable duration
+- Videos: MP4, WebM (plays for video length or specified duration)
+- Audio: MP3, WAV (plays for audio length or specified duration)
+- YouTube Videos:
+  - Regular videos (16:9 aspect ratio)
+  - Shorts (9:16 aspect ratio)
+  - Supports both `youtube.com/watch?v=...` and `youtube.com/shorts/...` URLs
+
+### Default Durations
+- GIFs: 10 seconds (customizable)
+- Videos: Full video length (customizable)
+- Audio: Full audio length (customizable)
+- YouTube Shorts: 60 seconds (customizable)
+
+## Technical Details
+
+- Built with Node.js and Express
+- Uses WebSocket for real-time communication
+- Implements proper file cleanup for uploaded media
+- Handles media aspect ratios automatically
+- Supports smooth fade transitions for all media types
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
