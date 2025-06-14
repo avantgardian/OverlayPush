@@ -3,36 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS Capture Page</title>
+    <title>OBS Capture</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: transparent;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
+            background: transparent;
         }
         #media-container {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
-        #media-container img, #media-container video {
+        #media-container img,
+        #media-container video,
+        #media-container iframe {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
-        #media-container img.fade-in, #media-container video.fade-in {
-            opacity: 1;
+        /* YouTube Shorts (vertical) */
+        #media-container iframe.youtube-short {
+            aspect-ratio: 9/16;
+            width: auto;
+            height: 100%;
         }
-        #media-container img.fade-out, #media-container video.fade-out {
-            opacity: 0;
+        /* Regular YouTube videos (horizontal) */
+        #media-container iframe.youtube-video {
+            aspect-ratio: 16/9;
+            width: 100%;
+            height: auto;
+        }
+        .fade-in {
+            opacity: 1 !important;
+        }
+        .fade-out {
+            opacity: 0 !important;
         }
     </style>
 </head>

@@ -1,7 +1,7 @@
 const mediaContainer = document.getElementById('media-container');
 let ws = null;
 let currentAudio = null;
-let clearTimeout = null;
+let fadeTimeout = null;
 
 function connectWebSocket() {
     ws = new WebSocket('ws://localhost:3000');
@@ -43,39 +43,94 @@ function handleMediaEvent(data) {
     }
 }
 
+function getYouTubeEmbedUrl(url) {
+    // Handle YouTube shorts
+    if (url.includes('youtube.com/shorts/')) {
+        const videoId = url.split('/shorts/')[1].split('?')[0];
+        return {
+            url: `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=0&controls=0`,
+            isShort: true
+        };
+    }
+    // Handle regular YouTube videos
+    else if (url.includes('youtube.com/watch')) {
+        const videoId = new URL(url).searchParams.get('v');
+        return {
+            url: `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=0&controls=0`,
+            isShort: false
+        };
+    }
+    return { url, isShort: false };
+}
+
 function showMedia(url, duration) {
     clearMedia();
-    const mediaElement = document.createElement(url.endsWith('.gif') ? 'img' : 'video');
-    
-    // Set up load event before setting src
-    mediaElement.onload = () => {
-        // Trigger fade in after the element is loaded
-        requestAnimationFrame(() => {
-            mediaElement.classList.add('fade-in');
-        });
-    };
-    
-    mediaElement.src = url;
-    
-    if (mediaElement.tagName === 'VIDEO') {
-        mediaElement.autoplay = true;
-        mediaElement.loop = false;
-        mediaElement.muted = true;
+    let mediaElement;
 
-        // If duration is 0, use video length
+    if (url.includes('youtube.com')) {
+        // Create iframe for YouTube videos
+        mediaElement = document.createElement('iframe');
+        const { url: embedUrl, isShort } = getYouTubeEmbedUrl(url);
+        mediaElement.src = embedUrl;
+        mediaElement.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        mediaElement.allowFullscreen = true;
+        mediaElement.frameBorder = '0';
+        
+        // Add class based on video type
+        if (isShort) {
+            mediaElement.classList.add('youtube-short');
+        } else {
+            mediaElement.classList.add('youtube-video');
+        }
+        
+        // YouTube videos typically have a fixed duration
         if (duration === 0) {
-            mediaElement.onloadedmetadata = () => {
-                setClearTimeout(mediaElement.duration * 1000);
-            };
+            // Default duration for YouTube videos (most shorts are around 30-60 seconds)
+            setClearTimeout(60 * 1000);
         } else {
             setClearTimeout(duration * 1000);
         }
     } else {
-        // For GIFs, use specified duration or default to 10 seconds
-        setClearTimeout((duration || 10) * 1000);
+        // Handle regular media files
+        mediaElement = document.createElement(url.endsWith('.gif') ? 'img' : 'video');
+        
+        // Set up load event before setting src
+        mediaElement.onload = () => {
+            // Trigger fade in after the element is loaded
+            requestAnimationFrame(() => {
+                mediaElement.classList.add('fade-in');
+            });
+        };
+        
+        mediaElement.src = url;
+        
+        if (mediaElement.tagName === 'VIDEO') {
+            mediaElement.autoplay = true;
+            mediaElement.loop = false;
+            mediaElement.muted = true;
+
+            // If duration is 0, use video length
+            if (duration === 0) {
+                mediaElement.onloadedmetadata = () => {
+                    setClearTimeout(mediaElement.duration * 1000);
+                };
+            } else {
+                setClearTimeout(duration * 1000);
+            }
+        } else {
+            // For GIFs, use specified duration or default to 10 seconds
+            setClearTimeout((duration || 10) * 1000);
+        }
     }
     
     mediaContainer.appendChild(mediaElement);
+    
+    // For YouTube videos, we need to trigger fade-in after a short delay
+    if (url.includes('youtube.com')) {
+        setTimeout(() => {
+            mediaElement.classList.add('fade-in');
+        }, 100);
+    }
 }
 
 function playAudio(url, duration) {
@@ -99,16 +154,16 @@ function playAudio(url, duration) {
 }
 
 function setClearTimeout(duration) {
-    if (clearTimeout) {
-        clearTimeout(clearTimeout);
+    if (fadeTimeout) {
+        clearTimeout(fadeTimeout);
     }
-    clearTimeout = setTimeout(() => {
+    fadeTimeout = setTimeout(() => {
         fadeOutAndClear();
     }, duration - 500); // Start fade out 500ms before clearing
 }
 
 function fadeOutAndClear() {
-    const mediaElements = mediaContainer.querySelectorAll('img, video');
+    const mediaElements = mediaContainer.querySelectorAll('img, video, iframe');
     mediaElements.forEach(element => {
         element.classList.remove('fade-in');
         element.classList.add('fade-out');
@@ -130,9 +185,9 @@ function clearAll() {
         currentAudio.pause();
         currentAudio = null;
     }
-    if (clearTimeout) {
-        clearTimeout(clearTimeout);
-        clearTimeout = null;
+    if (fadeTimeout) {
+        clearTimeout(fadeTimeout);
+        fadeTimeout = null;
     }
 }
 
